@@ -1,5 +1,9 @@
+//get liveclientdata url start
+const riotLiveData = 'https://cors-anywhere.herokuapp.com/https://127.0.0.1:2999/liveclientdata/'
+
+//actually get the data
 async function getLiveData() {
-    const url = 'https://127.0.0.1:2999/liveclientdata/playerlist';
+    const url = `${riotLiveData}playerlist`;
 
     try {
         const response = await fetch(url, {
@@ -24,13 +28,13 @@ async function getLiveData() {
 
 async function getActivePlayerTeam() {
     try {
-        const activePlayerResponse = await fetch('https://127.0.0.1:2999/liveclientdata/activeplayername');
+        const activePlayerResponse = await fetch(`${riotLiveData}activeplayername`);
         const activePlayerName = await activePlayerResponse.json();
 
         const playersResponse = await fetch('https://127.0.0.1:2999/liveclientdata/playerlist');
         const playersData = await playersResponse.json();
 
-        const activePlayerData = playersData.find(player => player.summonerName === activePlayerName);
+        const playersResponse = await fetch(`${riotLiveData}playerlist`);
         return activePlayerData ? activePlayerData.team : null;
     } catch (error) {
         console.error('Error fetching active player or player list:', error);
