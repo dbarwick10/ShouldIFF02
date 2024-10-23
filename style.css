@@ -1,13 +1,135 @@
-#orderTeam, #chaosTeam {
-    margin-bottom: 20px;
-}
-
-ul {
-    list-style-type: none;
+/* General Reset */
+* {
+    margin: 0;
     padding: 0;
+    box-sizing: border-box;
+    font-family: 'Beaufort for LoL', Arial, sans-serif; /* Use LoL-inspired fonts */
 }
 
-li {
-    margin: 5px 0;
+/* Body Background */
+body {
+    background: linear-gradient(120deg, #2b2d42, #0d0d12); /* Dark gradient for background */
+    color: #d6d6e5;
     font-size: 16px;
+    line-height: 1.6;
+}
+
+/* Container for the Stats Section */
+#compare-team-stats {
+    background: rgba(22, 28, 40, 0.85); /* Semi-transparent background with dark theme */
+    border: 1px solid #414a6b;
+    border-radius: 10px;
+    padding: 20px;
+    max-width: 700px;
+    margin: 40px auto;
+    text-align: center;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.9); /* Dark glow around the container */
+}
+
+/* Headings */
+h1, h2 {
+    color: #d4af37; /* Gold-inspired headings to give it a luxurious, victorious look */
+    text-shadow: 0 0 5px rgba(212, 175, 55, 0.75), 0 0 10px rgba(212, 175, 55, 0.5);
+    margin-bottom: 15px;
+    font-weight: 700;
+    font-size: 2em;
+}
+
+/* Team Stat List Styling */
+#order-list, #chaos-list {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0;
+    background-color: rgba(13, 13, 18, 0.6);
+    border: 1px solid #444;
+    border-radius: 8px;
+    padding: 15px;
+}
+
+#order-list li, #chaos-list li {
+    padding: 10px 0;
+    color: #a0aec0;
+    font-size: 1.2em;
+    text-shadow: 1px 1px 2px black;
+}
+
+#order-list li:nth-child(odd), #chaos-list li:nth-child(odd) {
+    background-color: rgba(255, 255, 255, 0.05); /* Slight color contrast between rows */
+}
+
+/* Stat Differences and Win Probability */
+p {
+    font-size: 1.1em;
+    padding: 8px 0;
+    color: #f2f4f8;
+    text-shadow: 0 0 5px rgba(50, 50, 50, 0.7);
+}
+
+p span {
+    font-weight: bold;
+    color: #37d4af; /* Stand out color for win probability and differences */
+}
+
+/* Glowing Button for Refresh or Fetch Data */
+button {
+    background: #414a6b;
+    border: 2px solid #7289da;
+    color: #d4af37;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 0 8px rgba(114, 137, 218, 0.5);
+    transition: all 0.3s ease-in-out;
+}
+
+button:hover {
+    background-color: #3b3e58;
+    box-shadow: 0 0 12px rgba(114, 137, 218, 0.8);
+    color: #ffffff;
+}
+
+/* Win Probability Glow Effect */
+#compare-team-stats p:last-child {
+    font-size: 1.4em;
+    color: #37d4af;
+    text-shadow: 0 0 8px rgba(55, 212, 175, 0.8), 0 0 15px rgba(55, 212, 175, 0.5);
+    font-weight: bold;
+}
+
+/* Animations for the Container */
+#compare-team-stats {
+    animation: fadeIn 1.5s ease;
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #0d0d12; /* Dark track */
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #414a6b; /* Styled thumb with dark blue */
+    border-radius: 6px;
+    border: 3px solid #0d0d12; /* Padding for contrast */
+}
+
+/* Add a subtle glowing effect on hover */
+button:hover, p:hover {
+    text-shadow: 0 0 5px #f0f0f0, 0 0 10px #d4af37;
 }
