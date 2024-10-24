@@ -20,7 +20,7 @@ body {
     border: 1px solid #414a6b;
     border-radius: 10px;
     padding: 20px;
-    max-width: 700px;
+    max-width: 800px;
     margin: 40px auto;
     text-align: center;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.9); /* Dark glow around the container */
@@ -35,39 +35,83 @@ h1, h2 {
     font-size: 2em;
 }
 
-/* Team Stat List Styling */
-#order-list, #chaos-list {
-    list-style: none;
-    padding: 0;
-    margin: 10px 0;
+/* Flex Container for Tables */
+.table-container {
+    display: flex; /* Ensure the tables are displayed side by side */
+    justify-content: space-between; /* Optional: evenly space the tables */
+}
+
+/* Ensure tables have equal size */
+table {
+    flex: 1; /* Allow tables to grow equally */
+    margin: 0 10px; /* Adjusted margin for spacing between tables */
+    border-collapse: collapse; /* Collapses borders between cells */
+    width: 100%;
+}
+
+/* Table Header and Cell Styling */
+th, td {
+    padding: 8px; /* Add padding for better spacing */
+    text-align: left; /* Align text to the left */
+}
+
+th {
     background-color: rgba(13, 13, 18, 0.6);
-    border: 1px solid #444;
-    border-radius: 8px;
-    padding: 15px;
+    color: #d4af37;
+    font-weight: bold;
+    border-bottom: 1px solid #444;
+    text-wrap: balance;
 }
 
-#order-list li, #chaos-list li {
-    padding: 10px 0;
+/* Styling for the table cells */
+td {
+    background-color: rgba(22, 28, 40, 0.85);
     color: #a0aec0;
-    font-size: 1.2em;
+    border-bottom: 1px solid #444;
     text-shadow: 1px 1px 2px black;
+    border-right: 1px solid black;
 }
 
-#order-list li:nth-child(odd), #chaos-list li:nth-child(odd) {
+/* Alternate row colors */
+tr:nth-child(odd) td {
     background-color: rgba(255, 255, 255, 0.05); /* Slight color contrast between rows */
 }
 
-/* Stat Differences and Win Probability */
-p {
-    font-size: 1.1em;
-    padding: 8px 0;
-    color: #f2f4f8;
-    text-shadow: 0 0 5px rgba(50, 50, 50, 0.7);
+/* Highlight row on hover */
+tr:hover td {
+    background-color: rgba(114, 137, 218, 0.2); /* Highlight row on hover */
 }
 
-p span {
-    font-weight: bold;
-    color: #37d4af; /* Stand out color for win probability and differences */
+/* Set fixed column widths for both tables to ensure they are identical */
+#order-list th:nth-child(1), #chaos-list th:nth-child(5),
+#order-list td:nth-child(1), #chaos-list td:nth-child(5) {
+    width: 18%; /* Gold */
+}
+
+#order-list th:nth-child(2), #chaos-list th:nth-child(4),
+#order-list td:nth-child(2), #chaos-list td:nth-child(4) {
+    width: 10%; /* CS */
+}
+
+#order-list th:nth-child(3), #chaos-list th:nth-child(3),
+#order-list td:nth-child(3), #chaos-list td:nth-child(3) {
+    width: 15%; /* K/D/A */
+}
+
+#order-list th:nth-child(4), #chaos-list th:nth-child(2),
+#order-list td:nth-child(4), #chaos-list td:nth-child(2) {
+    width: 22%; /* Champion */
+}
+
+#order-list th:nth-child(5), #chaos-list th:nth-child(1),
+#order-list td:nth-child(5), #chaos-list td:nth-child(1) {
+    width: 35%; /* Player */
+}
+
+/* Ensure tables do not stretch beyond a certain width */
+table {
+    max-width: 50%; /* Adjust as needed for each table */
+    margin: 5px; /* Remove margin from tables for better alignment */
 }
 
 /* Glowing Button for Refresh or Fetch Data */

@@ -7,20 +7,43 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div>
-        <div id="orderTeam">
-            <h2>Order Team</h2>
-            <ul id="order-list"></ul> <!-- Use the same ID here -->
-        </div>
-        <div id="compare-team-stats">
 
-        </div>
-        <div id="chaosTeam">
-            <h2>Chaos Team</h2>
-            <ul id="chaos-list"></ul> <!-- Use the same ID here -->
-        </div>
+    <h1>Game Information</h1>
+    <div id="team-stats" class="table-container">
+        <table id="order-list">
+            <thead>
+                <tr>
+                    <th class="gold-col">Total Gold</th>
+                    <th class="cs-col">CS</th>
+                    <th class="kda-col">K/D/A</th>
+                    <th class="level-col">Level</th>
+                    <th class="champion-col">Champion</th>
+                    <th class="player-col">Blue Team Player</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Player stats for Team Order will be injected here -->
+            </tbody>
+        </table>
+        <div id="compare-team-stats"></div>
+        <table id="chaos-list">
+            <thead>
+                <tr>
+                    <th class="player-col">Red Team Player</th>
+                    <th class="champion-col">Champion</th>
+                    <th class="level-col">Level</th>
+                    <th class="kda-col">K/D/A</th>
+                    <th class="cs-col">CS</th>
+                    <th class="gold-col">Item Gold</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Player stats for Team Chaos will be injected here -->
+            </tbody>
+        </table>
     </div>
-    <div id="should-you-ff-result">Should You FF?</div>
-<script src="script.js"></script>
+    
+    <script src="script.js"></script>
 </body>
+
 </html>
