@@ -322,7 +322,7 @@ async function calculateWinProbability() {
         cs: 0.075,
         gold: 0.15
     };
-
+    
     // Calculate weighted sum for win probability
 const winScore = (
     (killsDiff * weights.kills +
@@ -332,12 +332,18 @@ const winScore = (
     //goldDiff * weights.gold
 );
 
-// Normalize win score into probability (assuming winScore range from -100 to +100)
-const minScore = -100; // Adjust this based on your expected range
-const maxScore = 100;  // Adjust this based on your expected range
+/* Win probability thoughts
+need active player team gold / total game gold
+game time in seconds
+avg team level / avg level in game
+turrets killed / total turrets killed in game
+dragons taken / total dragons taken in game
+barons taken / total barons in game
+
+*/
 
 // Normalize to a probability between 0 and 1
-const winProbability = winScore//Math.min(Math.max((winScore - minScore) / (maxScore - minScore), 0), 1);
+const winProbability = winScore
 
 
     console.log("win prob:", winProbability)
