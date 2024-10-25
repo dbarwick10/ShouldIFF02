@@ -30,7 +30,7 @@ body {
 /* Headings */
 h1, h2 {
     color: #d4af37; /* Gold-inspired headings to give it a luxurious, victorious look */
-    text-shadow: 0 0 5px rgba(212, 175, 55, 0.75), 0 0 10px rgba(212, 175, 55, 0.5);
+    /*text-shadow: 0 0 5px rgba(212, 175, 55, 0.75), 0 0 10px rgba(212, 175, 55, 0.5);*/
     margin-bottom: 15px;
     font-weight: 700;
     font-size: 2em;
