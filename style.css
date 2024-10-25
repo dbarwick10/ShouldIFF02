@@ -83,28 +83,33 @@ tr:hover td {
 }
 
 /* Set fixed column widths for both tables to ensure they are identical */
-#order-list th:nth-child(1), #chaos-list th:nth-child(5),
-#order-list td:nth-child(1), #chaos-list td:nth-child(5) {
-    width: 18%; /* Gold */
+#order-list th:nth-child(1), #chaos-list th:nth-child(6),
+#order-list td:nth-child(1), #chaos-list td:nth-child(6) {
+    width: 12%; /* Gold */
 }
 
-#order-list th:nth-child(2), #chaos-list th:nth-child(4),
-#order-list td:nth-child(2), #chaos-list td:nth-child(4) {
+#order-list th:nth-child(2), #chaos-list th:nth-child(5),
+#order-list td:nth-child(2), #chaos-list td:nth-child(5) {
     width: 10%; /* CS */
 }
 
-#order-list th:nth-child(3), #chaos-list th:nth-child(3),
-#order-list td:nth-child(3), #chaos-list td:nth-child(3) {
-    width: 15%; /* K/D/A */
+#order-list th:nth-child(3), #chaos-list th:nth-child(4),
+#order-list td:nth-child(3), #chaos-list td:nth-child(4) {
+    width: 13%; /* K/D/A */
 }
 
-#order-list th:nth-child(4), #chaos-list th:nth-child(2),
-#order-list td:nth-child(4), #chaos-list td:nth-child(2) {
-    width: 22%; /* Champion */
+#order-list th:nth-child(4), #chaos-list th:nth-child(3),
+#order-list td:nth-child(4), #chaos-list td:nth-child(3) {
+    width: 10%; /* Level */
 }
 
-#order-list th:nth-child(5), #chaos-list th:nth-child(1),
-#order-list td:nth-child(5), #chaos-list td:nth-child(1) {
+#order-list th:nth-child(5), #chaos-list th:nth-child(2),
+#order-list td:nth-child(5), #chaos-list td:nth-child(2) {
+    width: 20%; /* Champion */
+}
+
+#order-list th:nth-child(6), #chaos-list th:nth-child(1),
+#order-list td:nth-child(6), #chaos-list td:nth-child(1) {
     width: 35%; /* Player */
 }
 

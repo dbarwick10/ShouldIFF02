@@ -72,10 +72,10 @@ function displayTeamStats(teamStats, teamTableId) {
     // Update the header with the totals
     if (teamTableId === 'order-list') {
     teamHeader.innerHTML = `
-        <th>Item Gold (${totalGold})</th>
-        <th>CS (${totalCS})</th>
-        <th>K/D/A (${totalKills}/${totalDeaths}/${totalAssists})</th>
-        <th>Level (${avgLevel})</th>
+        <th>Item Gold</th>
+        <th>CS</th>
+        <th>K/D/A</th>
+        <th>Level</th>
         <th>Champion</th>
         <th>${activePlayerTeam === 'ORDER' ? 'Red Team' : 'Blue Team'} Player</th>
     `;
@@ -84,9 +84,9 @@ function displayTeamStats(teamStats, teamTableId) {
             <th> ${activePlayerTeam === 'CHAOS' ? 'Blue Team' : 'Red Team'} Player</th>
             <th>Champion</th>
             <th>Level</th>
-            <th>K/D/A (${totalKills}/${totalDeaths}/${totalAssists})</th>
-            <th>CS (${totalCS})</th>
-            <th>Item Gold (${totalGold})</th>
+            <th>K/D/A</th>
+            <th>CS</th>
+            <th>Item Gold</th>
         `;
         }
 
@@ -113,14 +113,14 @@ function displayTeamStats(teamStats, teamTableId) {
             `;
         }
 
-        teamTable.appendChild(row);  // Append each player's stats
+        teamTable.appendChild(row);  
     });
 }
 
 // Fetch and display live game data
 async function gameInformation() {
-    const gameData = await getLiveData(); // Assuming this returns the full game data
-    const allPlayers = gameData.allPlayers; // Assuming players are in allPlayers array
+    const gameData = await getLiveData(); 
+    const allPlayers = gameData.allPlayers; 
 
     if (!allPlayers) {
         console.error('No players found in game data');
@@ -160,16 +160,17 @@ async function gameInformation() {
 function calculateTotalGold(player) {
     const itemsGold = player.items.reduce((acc, item) => {
         const itemPrice = parseFloat(item.price);
-        return acc + (isNaN(itemPrice) ? 0 : itemPrice);  // Fallback to 0 if price is NaN
+        return acc + (isNaN(itemPrice) ? 0 : itemPrice);  //  0 if price is NaN
     }, 0);
     
     const currentGold = parseFloat(player.currentGold);
     
-    return Math.floor(itemsGold + (isNaN(currentGold) ? 0 : currentGold));  // Fallback to 0 if currentGold is NaN
+    return Math.floor(itemsGold + (isNaN(currentGold) ? 0 : currentGold));  //  0 if currentGold is NaN
 }
 
+//get game time in minutes:seconds and only seconds
 async function getGameTime() {
-    const gameTimeData = await getLiveData(); // Assuming this returns the full game data
+    const gameTimeData = await getLiveData(); 
     const time = gameTimeData.gameData.gameTime
     const minutes = Math.floor(time / 60)
     const seconds = (time % 60).toFixed(0)
@@ -179,27 +180,17 @@ async function getGameTime() {
     return gameTime
 }
 
-// Calculate kills
-async function getChaosKills() {
-    const gameData = await getLiveData(); // Assuming this returns the full game data
-    const allPlayers = gameData.allPlayers; // Assuming players are in allPlayers array
-
-    if (!allPlayers) {
-        console.error('No players found in game data');
-        return;
-    }
-
-    const teamChaosKills = allPlayers
-        .filter(player => player.team === 'CHAOS') // Accessing player.team
-        .reduce((total, player) => total + player.scores.kills, 0); // Accessing player.scores.kills
-
-    const activePlayerTeam = await getActivePlayerTeam(); // Get the active player's team
-    return teamChaosKills
+async function getGameTimeSeconds() {
+    const gameTimeData = await getLiveData(); 
+    const time = gameTimeData.gameData.gameTime
+    
+    return time
 }
 
+// Calculate kills
 async function getOrderKills() {
-    const gameData = await getLiveData(); // Assuming this returns the full game data
-    const allPlayers = gameData.allPlayers; // Assuming players are in allPlayers array
+    const gameData = await getLiveData(); 
+    const allPlayers = gameData.allPlayers; 
 
     if (!allPlayers) {
         console.error('No players found in game data');
@@ -207,11 +198,59 @@ async function getOrderKills() {
     }
 
     const teamOrderKills = allPlayers
-        .filter(player => player.team === 'ORDER') // Accessing player.team
-        .reduce((total, player) => total + player.scores.kills, 0); // Accessing player.scores.kills
+        .filter(player => player.team === 'ORDER') 
+        .reduce((total, player) => total + player.scores.kills, 0); 
 
-    const activePlayerTeam = await getActivePlayerTeam(); // Get the active player's team
-    return teamOrderKills
+    return teamOrderKills;
+}
+
+async function getChaosKills() {
+    const gameData = await getLiveData(); 
+    const allPlayers = gameData.allPlayers; 
+
+    if (!allPlayers) {
+        console.error('No players found in game data');
+        return;
+    }
+
+    const teamChaosKills = allPlayers
+        .filter(player => player.team === 'CHAOS') 
+        .reduce((total, player) => total + player.scores.kills, 0); 
+
+    return teamChaosKills;
+}
+
+//get levels
+async function getOrderLevels() {
+    const gameData = await getLiveData();
+    const allPlayers = gameData.allPlayers; 
+
+    if (!allPlayers) {
+        console.error('No players found in game data');
+        return;
+    }
+
+    const teamOrderLevels = allPlayers
+        .filter(player => player.team === 'ORDER') 
+        .reduce((total, player) => total + player.level, 0); 
+
+    return teamOrderLevels;
+}
+
+async function getChaosLevels() {
+    const gameData = await getLiveData();
+    const allPlayers = gameData.allPlayers; 
+
+    if (!allPlayers) {
+        console.error('No players found in game data');
+        return;
+    }
+
+    const teamChaosLevels = allPlayers
+        .filter(player => player.team === 'CHAOS') 
+        .reduce((total, player) => total + player.level, 0); 
+
+    return teamChaosLevels;
 }
 
 // Calculate deaths difference
@@ -223,25 +262,15 @@ async function getOrderDeaths() {
         console.error('No players found in game data');
         return;
     }
-    const teamChaosDeaths = allPlayers
-        .filter(player => player.team === 'CHAOS')
-        .reduce((total, player) => total + player.scores.deaths, 0);
     
     const teamOrderDeaths = allPlayers
         .filter(player => player.team === 'ORDER')
         .reduce((total, player) => total + player.scores.deaths, 0);
 
-    console.log("Team Order Deaths:", teamOrderDeaths);  // Log kills for debugging
-    console.log("Team Chaos Deaths:", teamChaosDeaths);
-
-    const activePlayerTeam = await getActivePlayerTeam(); // Get the active player's team
-    return activePlayerTeam === 'ORDER' ? teamOrderDeaths - teamChaosDeaths : teamChaosDeaths - teamOrderDeaths;
-    
-    
+    return teamOrderDeaths;
 }
 
-// Calculate assists difference
-async function getPlayerAssistsDifference() {
+async function getChaosDeaths() {
     const gameData = await getLiveData(); // Assuming this returns the full game data
     const allPlayers = gameData.allPlayers; // Assuming players are in allPlayers array
 
@@ -249,24 +278,49 @@ async function getPlayerAssistsDifference() {
         console.error('No players found in game data');
         return;
     }
-
-    const teamChaosAssists = allPlayers
+    
+    const teamChaosDeaths = allPlayers
         .filter(player => player.team === 'CHAOS')
-        .reduce((total, player) => total + player.scores.assists, 0);
+        .reduce((total, player) => total + player.scores.deaths, 0);
+
+    return teamChaosDeaths;
+}
+
+// Calculate assists difference
+async function getOrderAssists() {
+    const gameData = await getLiveData(); // Assuming this returns the full game data
+    const allPlayers = gameData.allPlayers; // Assuming players are in allPlayers array
+
+    if (!allPlayers) {
+        console.error('No players found in game data');
+        return;
+    } 
     
     const teamOrderAssists = allPlayers
         .filter(player => player.team === 'ORDER')
         .reduce((total, player) => total + player.scores.assists, 0);
+   
+    return teamOrderAssists;
+}
 
-    console.log("Team Order Assists:", teamOrderAssists);  // Log kills for debugging
-    console.log("Team Chaos Assists:", teamChaosAssists);
+async function getChaosAssists() {
+    const gameData = await getLiveData(); // Assuming this returns the full game data
+    const allPlayers = gameData.allPlayers; // Assuming players are in allPlayers array
 
-    const activePlayerTeam = await getActivePlayerTeam(); // Get the active player's team
-    return activePlayerTeam === 'ORDER' ? teamOrderAssists - teamChaosAssists : teamChaosAssists - teamOrderAssists;
+    if (!allPlayers) {
+        console.error('No players found in game data');
+        return;
+    } 
+    
+    const teamChaosAssists = allPlayers
+        .filter(player => player.team === 'CHAOS')
+        .reduce((total, player) => total + player.scores.assists, 0);
+   
+    return teamChaosAssists;
 }
 
 // Calculate CS difference
-async function getPlayerCSDifference() {
+async function getOrderCS() {
     const gameData = await getLiveData(); // Assuming this returns the full game data
     const allPlayers = gameData.allPlayers; // Assuming players are in allPlayers array
 
@@ -274,24 +328,48 @@ async function getPlayerCSDifference() {
         console.error('No players found in game data');
         return;
     }
-
-    const teamChaosCS = allPlayers
-        .filter(player => player.team === 'CHAOS')
-        .reduce((total, player) => total + player.scores.creepScore, 0);
     
     const teamOrderCS = allPlayers
         .filter(player => player.team === 'ORDER')
         .reduce((total, player) => total + player.scores.creepScore, 0);
 
-    console.log("Team Order CS:", teamOrderCS);  // Log kills for debugging
-    console.log("Team Chaos CS:", teamChaosCS);
+    return teamOrderCS;
+}
 
-    const activePlayerTeam = await getActivePlayerTeam(); // Get the active player's team
-    return activePlayerTeam === 'ORDER' ? teamOrderCS - teamChaosCS : teamChaosCS - teamOrderCS;
+async function getChaosCS() {
+    const gameData = await getLiveData(); // Assuming this returns the full game data
+    const allPlayers = gameData.allPlayers; // Assuming players are in allPlayers array
+
+    if (!allPlayers) {
+        console.error('No players found in game data');
+        return;
+    }
+    
+    const teamChaosCS = allPlayers
+        .filter(player => player.team === 'CHAOS')
+        .reduce((total, player) => total + player.scores.creepScore, 0);
+
+    return teamChaosCS;
 }
 
 // Calculate total gold difference
-async function getPlayerTotalGoldDifference() {
+async function getOrderGold() {
+    const gameData = await getLiveData(); // Assuming this returns the full game data
+    const allPlayers = gameData.allPlayers; // Assuming players are in allPlayers array
+
+    if (!allPlayers) {
+        console.error('No players found in game data');
+        return;
+    }
+
+    const teamOrderGold = allPlayers
+        .filter(player => player.team === 'ORDER')
+        .reduce((total, player) => total + calculateTotalGold(player), 0);
+
+    return teamOrderGold;
+}
+
+async function getChaosGold() {
     const gameData = await getLiveData(); // Assuming this returns the full game data
     const allPlayers = gameData.allPlayers; // Assuming players are in allPlayers array
 
@@ -303,44 +381,187 @@ async function getPlayerTotalGoldDifference() {
     const teamChaosGold = allPlayers
         .filter(player => player.team === 'CHAOS')
         .reduce((total, player) => total + calculateTotalGold(player), 0);
-    
-    const teamOrderGold = allPlayers
-        .filter(player => player.team === 'ORDER')
-        .reduce((total, player) => total + calculateTotalGold(player), 0);
 
-    console.log("Team Order Gold:", teamOrderGold);  // Log kills for debugging
-    console.log("Team Chaos Gold:", teamChaosGold);
-
-    const activePlayerTeam = await getActivePlayerTeam(); // Get the active player's team
-    return activePlayerTeam === 'ORDER' ? teamOrderGold - teamChaosGold : teamChaosGold - teamOrderGold;
+    return teamChaosGold;
 }
+
+// Calculate dragons taken
+async function getOrderDragon() {
+    const gameData = await getLiveData(); // Assuming this returns the full game data
+    const allPlayers = gameData.allPlayers; // Assuming players are in allPlayers array
+
+    if (!allPlayers) {
+        console.error('No players found in game data');
+        return;
+    }
+
+    const teamOrderDragon = gameData.events.Events 
+        .filter(event => event.EventName === "DragonKill")
+        .filter(event => {
+            return allPlayers.some(player => player.team === 'ORDER');
+        }).length;
+
+    return teamOrderDragon;
+}
+
+async function getChaosDragon() {
+    const gameData = await getLiveData(); // Assuming this returns the full game data
+    const allPlayers = gameData.allPlayers; // Assuming players are in allPlayers array
+
+    if (!allPlayers) {
+        console.error('No players found in game data');
+        return;
+    }
+
+    const teamChaosDragon = gameData.events.Events 
+        .filter(event => event.EventName === "DragonKill")
+        .filter(event => {
+            return allPlayers.some(player => player.team === 'CHAOS');
+        }).length;
+
+    return teamChaosDragon;
+}
+
+// Calculate baron taken
+async function getOrderBaron() {
+    const gameData = await getLiveData(); 
+    const allPlayers = gameData.allPlayers;
+    const currentTime = getGameTimeSeconds(); 
+
+    if (!allPlayers) {
+        console.error('No players found in game data');
+        return;
+    }
+
+    const teamOrderBaron = gameData.events.Events 
+        .some(event => event.EventName === "BaronKill" && 
+                       (currentTime - event.EventTime <= 150) && 
+                       allPlayers.some(player => player.team === 'ORDER'));
+
+    return teamOrderBaron ? 1 : 0;
+}
+
+async function getChaosBaron() {
+    const gameData = await getLiveData(); 
+    const allPlayers = gameData.allPlayers; 
+    const currentTime = getGameTimeSeconds();
+
+    if (!allPlayers) {
+        console.error('No players found in game data');
+        return;
+    }
+
+    const teamChaosBaron = gameData.events.Events 
+        .some(event => event.EventName === "BaronKill" && 
+                       (currentTime - event.EventTime <= 150) && 
+                       allPlayers.some(player => player.team === 'CHAOS'));
+
+    return teamChaosBaron ? 1 : 0;
+}
+
+// Calculate Elder taken
+async function getOrderElder() {
+    const gameData = await getLiveData(); 
+    const allPlayers = gameData.allPlayers;
+    const currentTime = getGameTimeSeconds(); 
+
+    if (!allPlayers) {
+        console.error('No players found in game data');
+        return;
+    }
+
+    const teamOrderElder = gameData.events.Events 
+        .some(event => event.EventName === "ElderKill" && 
+                       (currentTime - event.EventTime <= 150) && 
+                       allPlayers.some(player => player.team === 'ORDER'));
+
+    return teamOrderElder ? 1 : 0;
+}
+
+async function getChaosElder() {
+    const gameData = await getLiveData(); 
+    const allPlayers = gameData.allPlayers; 
+    const currentTime = getGameTimeSeconds();
+
+    if (!allPlayers) {
+        console.error('No players found in game data');
+        return false; 
+    }
+    
+    const teamChaosElder = gameData.events.Events 
+        .some(event => event.EventName === "ElderKill" && 
+                       (currentTime - event.EventTime <= 150) && 
+                       allPlayers.some(player => player.team === 'CHAOS'));
+
+    return teamChaosElder ? 1 : 0;
+}
+
 
 // Calculate win probability based on differences
 async function calculateWinProbability() {
-    const killsDiff = await getChaosKills() - await getOrderKills();
-    const deathsDiff = await getPlayerDeathsDifference();
-    const assistsDiff = await getPlayerAssistsDifference();
-    const kda = `${killsDiff}/${deathsDiff}/${assistsDiff}`;
-    const csDiff = await getPlayerCSDifference();
-    const goldDiff = await getPlayerTotalGoldDifference();
+    
+    const activePlayerTeam = getActivePlayerTeam();
+    const orderkills = await getOrderKills();
+    const chaosKills = await getChaosKills();
+    const totalKills = orderkills + chaosKills;
+    const killsRatio = activePlayerTeam === 'ORDER' ? orderkills / totalKills : chaosKills / totalKills;
+    const orderDeaths = await getOrderDeaths();
+    const chaosDeaths = await getChaosDeaths();
+    const totalDeaths = orderDeaths + chaosDeaths;
+    const deathsRatio = activePlayerTeam === 'ORDER' ? orderDeaths / totalDeaths : chaosDeaths / totalDeaths;
+    const orderAssists = await getOrderAssists();
+    const chaosAssists = await getChaosAssists();
+    const totalAssists  = orderAssists + chaosAssists;
+    const assistsRatio = activePlayerTeam === 'ORDER' ? orderAssists / totalAssists : chaosAssists / totalAssists;
+    const orderCS = await getOrderCS();
+    const chaosCS = await getChaosCS();
+    const totalCS = orderCS + chaosCS;
+    const cSRatio = activePlayerTeam === 'ORDER' ? orderCS / totalCS : chaosCS / totalCS;
+    const orderLevels = await getOrderLevels();
+    const chaosLevels = await getChaosLevels();
+    const totalLevels = orderLevels + chaosLevels
+    const levelsRatio = activePlayerTeam === 'ORDER' ? orderLevels / totalLevels : chaosLevels / totalLevels;
+    const orderGold = await getOrderGold();
+    const chaosGold = await getChaosGold();
+    const totalGold = orderGold + chaosGold;
+    const goldRatio = activePlayerTeam === 'ORDER' ? orderGold / totalGold : chaosGold / totalGold;
+    const orderDragon = await getOrderDragon();
+    const chaosDragon = await getChaosDragon();
+    const totalDragon = orderDragon + chaosDragon;
+    const dragonRatio = activePlayerTeam === 'ORDER' ? orderDragon / totalDragon : chaosDragon / totalDragon;
+    const dragonSoul = activePlayerTeam === 'ORDER' ? orderDragon >= 4 : chaosDragon >= 4;
+    const orderBaron = await getOrderBaron();
+    const chaosBaron = await getChaosBaron();
+    const orderElder = await getOrderElder();
+    const chaosElder = await getChaosElder();
+    const gameTime = await getGameTimeSeconds();
+    
 
+    //activePlayerTeam === 'ORDER' ? teamOrderCS - teamChaosCS : teamChaosCS - teamOrderCS;
     //https://github.com/Anndrey24/LoL_Win_Probability_Prediction/blob/main/Win_Predictor.ipynb
     // Factors to weigh each stat's importance in calculating win probability
     const weights = {
-        kills: 0.6,
+        kills: 0.25,
         deaths: 0.3,
-        assists: 0.4,
-        cs: 0.075,
-        gold: 0.15
+        assists: .21,
+        cs: 0.4,
+        gold: 0.4,
+        time: .00001,
+        dragon: .05,
+        dragonSoul: .5,
+        levels: .2
     };
     
     // Calculate weighted sum for win probability
 const winScore = (
-    (killsDiff * weights.kills +
-    assistsDiff * weights.assists) /
-    deathsDiff * weights.deaths //+
-    //csDiff * weights.cs +
-    //goldDiff * weights.gold
+    killsRatio * weights.kills +
+    assistsRatio * weights.assists +
+    cSRatio * weights.cs +
+    levelsRatio * weights.levels +
+    goldRatio * weights.gold 
+    //+dragonRatio * weights.dragon 
+    //+dragonSoul * weights.dragonSoul
+    //+ gameTime * weights.time
 );
 
 /* Win probability thoughts
@@ -349,9 +570,7 @@ game time in seconds
 avg team level / avg level in game
 turrets killed / total turrets killed in game
 dragons taken / total dragons taken in game
-barons taken / total barons in game
-
-*/
+barons taken / total barons in game */
 
 // Normalize to a probability between 0 and 1
 const winProbability = winScore
@@ -364,23 +583,30 @@ const winProbability = winScore
 
 // Update all stats differences, including win probability, and display in the DOM
 async function updateAllStatsInDOM() {
-    const killsDiff = await getChaosKills() - await getOrderKills();
-    const deathsDiff = await getPlayerDeathsDifference();
-    const assistsDiff = await getPlayerAssistsDifference();
-    const csDiff = await getPlayerCSDifference();
-    const goldDiff = await getPlayerTotalGoldDifference();
-    const winProbability = await calculateWinProbability();
     const activePlayerTeam = getActivePlayerTeam();
+    const orderkills = await getOrderKills();
+    const chaosKills = await getChaosKills();
+    const orderdeaths = await getOrderDeaths();
+    const chaosdeaths = await getChaosDeaths();
+    const orderAssists = await getOrderAssists();
+    const chaosAssists = await getChaosAssists();
+    const orderCS = await getOrderCS();
+    const chaosCS = await getChaosCS();
+    const orderGold = await getOrderGold();
+    const chaosGold = await getChaosGold();
+    const orderDragon = await getOrderDragon();
+    const chaosDragon = await getChaosDragon();
     const gameTime = await getGameTime();
+    const winProbability = await calculateWinProbability();
 
     const statsHtml = `
         <h2>${activePlayerTeam === 'ORDER' ? 'Blue team' : 'Red team'}</h2>
         <p>Game Time: ${gameTime}</p>
-        <p>Kills Difference: ${killsDiff}</p>
-        
-        <p>Assists Difference: ${assistsDiff}</p>
-        <p>CS Difference: ${csDiff}</p>
-        <p>Total Item Gold Difference: ${goldDiff}</p>
+        <p>${orderkills} :K: ${chaosKills}</p>
+        <p>${orderdeaths} :D: ${chaosdeaths}</p>
+        <p>${orderAssists} :A: ${chaosAssists}</p>
+        <p>${orderCS} :CS: ${chaosCS}</p>
+        <p>${orderGold} :Item Gold: ${chaosGold}</p>
         <p>Win Probability: ${winProbability}%</p>
     `;
     updateTeamStatsInDOM(statsHtml);
