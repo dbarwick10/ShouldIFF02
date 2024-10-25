@@ -72,16 +72,16 @@ function displayTeamStats(teamStats, teamTableId) {
     // Update the header with the totals
     if (teamTableId === 'order-list') {
         teamHeader.innerHTML = `
-            <th> ${activePlayerTeam === 'CHAOS' ? 'Blue Team' : 'Red Team'} Player</th>
+            <th>Blue Team</th>
             <th>Champion</th>
             <th>Level</th>
             <th>K/D/A</th>
             <th>CS</th>
             <th>Item Gold</th>
         `;
-    } else if (teamTableId === 'chaos-list') {
+    } else if (teamTableId === 'chaos-list') { //<th> ${activePlayerTeam === 'CHAOS' ? 'Blue Team' : 'Red Team'}</th>
         teamHeader.innerHTML = `
-            <th> ${activePlayerTeam === 'CHAOS' ? 'Blue Team' : 'Red Team'} Player</th>
+            <th>Red Team</th>
             <th>Champion</th>
             <th>Level</th>
             <th>K/D/A</th>
