@@ -1,3 +1,9 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
 /* General Reset */
 * {
     margin: 0;
@@ -12,6 +18,7 @@ body {
     color: #d6d6e5;
     font-size: 16px;
     line-height: 1.6;
+    background-size: cover; 
 }
 
 
@@ -249,5 +256,5 @@ button:hover {
 
 /* Add a subtle glowing effect on hover */
 button:hover, p:hover {
-    text-shadow: 0 0 5px #f0f0f0, 0 0 10px #d4af37;
+    text-shadow: 0 0 1px #f0f0f0, 0 0 1px #d4af37;
 }

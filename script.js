@@ -11,8 +11,16 @@ async function getLiveData() {
     }
 
     try {
-        // Fetch the data from allgamedata.json only once
+        // Fetch the data from allgamedata.json for testing
         const response = await fetch('allgamedata.json');
+        
+        /*const response = await fetch("https://cors-anywhere.herokuapp.com/https://127.0.0.1:2999/liveclientdata/allgamedata", {
+            method: "GET",
+            mode: "cors",
+            headers: {
+              "Content-Type": "application/json",
+            },
+        });*/
 
         if (response.ok) {
             cachedGameData = await response.json(); // Store data in memory
@@ -36,10 +44,10 @@ async function getActivePlayerTeam() {
         const activePlayer = allGameData.allPlayers.find(player => player.riotIdGameName === activePlayerName);
         
         if (activePlayer) {
-            console.log("Active player team:", activePlayer.team); // Log the active player's team
+            //console.log("Active player team:", activePlayer.team); // Log the active player's team
             return activePlayer.team; // Return the active player's team if found
         } else {
-            console.log("Active player not found."); // Log if active player is not found
+            //console.log("Active player not found."); // Log if active player is not found
             return null; // Return null if player is not found
         }
     } catch (error) {
@@ -176,7 +184,6 @@ async function getGameTime() {
     const seconds = (time % 60).toFixed(0)
     const gameTime = `${minutes}m ${seconds}s`
 
-    console.log("game time::", gameTime);
     return gameTime
 }
 
@@ -399,9 +406,14 @@ async function getOrderTurret() {
         .filter(player => player.team === 'ORDER') // Get players on the ORDER team
         .map(player => player.riotIdGameName); // Get their summoner names
 
-    const teamOrderTurret = gameData.events.Events
+    const teamOrderOuterTurret = gameData.events.Events
         .filter(event => 
             event.EventName === "TurretKilled" &&
+            (
+            event.TurretKilled === "Turret_T2_R_03_A" ||
+            event.TurretKilled === "Turret_T2_L_03_A" ||
+            event.TurretKilled === "Turret_T2_C_05_A"
+            ) &&
             (
             teamOrderPlayers.includes(event.KillerName) ||
             event.KillerName.includes("Minion_T100")
@@ -409,7 +421,57 @@ async function getOrderTurret() {
         )
         .length;
 
-    return teamOrderTurret;
+    const teamOrderInnerTurret = gameData.events.Events
+    .filter(event => 
+        event.EventName === "TurretKilled" &&
+        (
+        event.TurretKilled === "Turret_T2_R_02_A" ||
+        event.TurretKilled === "Turret_T2_L_02_A" ||
+        event.TurretKilled === "Turret_T2_C_04_A"
+        ) &&
+        (
+        teamOrderPlayers.includes(event.KillerName) ||
+        event.KillerName.includes("Minion_T100")
+        )
+    )
+    .length;
+
+    const teamOrderInhibTurret = gameData.events.Events
+        .filter(event => 
+            event.EventName === "TurretKilled" &&
+            (
+            event.TurretKilled === "Turret_T2_R_01_A" ||
+            event.TurretKilled === "Turret_T2_L_01_A" ||
+            event.TurretKilled === "Turret_T2_C_03_A"
+            ) &&
+            (
+            teamOrderPlayers.includes(event.KillerName) ||
+            event.KillerName.includes("Minion_T100")
+            )
+        )
+    .length;
+
+    const teamOrderNexusTurret = gameData.events.Events
+        .filter(event => 
+            event.EventName === "TurretKilled" &&
+            (
+            event.TurretKilled === "Turret_T2_C_01_A" ||
+            event.TurretKilled === "Turret_T2_C_02_A"
+            ) &&
+            (
+            teamOrderPlayers.includes(event.KillerName) ||
+            event.KillerName.includes("Minion_T100")
+            )
+        )
+    .length;
+ 
+    return {
+        teamOrderOuterTurret,
+        teamOrderInnerTurret,
+        teamOrderInhibTurret,
+        teamOrderNexusTurret,
+        total: teamOrderOuterTurret + teamOrderInnerTurret + teamOrderInhibTurret + teamOrderNexusTurret
+    };
 }
 
 async function getChaosTurret() {
@@ -425,25 +487,80 @@ async function getChaosTurret() {
         .filter(player => player.team === 'CHAOS') // Get players on the CHAOS team
         .map(player => player.riotIdGameName); // Get their summoner names
 
-    const teamChaosTurret = gameData.events.Events
+        const teamChaosOuterTurret = gameData.events.Events
         .filter(event => 
             event.EventName === "TurretKilled" &&
             (
-            teamChaosPlayers.includes(event.KillerName) || 
+            event.TurretKilled === "Turret_T1_R_03_A" ||
+            event.TurretKilled === "Turret_T1_L_03_A" ||
+            event.TurretKilled === "Turret_T1_C_05_A"
+            ) &&
+            (
+            teamChaosPlayers.includes(event.KillerName) ||
             event.KillerName.includes("Minion_T200")
             )
         )
         .length;
 
-    return teamChaosTurret;
+    const teamChaosInnerTurret = gameData.events.Events
+    .filter(event => 
+        event.EventName === "TurretKilled" &&
+        (
+        event.TurretKilled === "Turret_T1_R_02_A" ||
+        event.TurretKilled === "Turret_T1_L_02_A" ||
+        event.TurretKilled === "Turret_T1_C_04_A"
+        ) &&
+        (
+        teamChaosPlayers.includes(event.KillerName) ||
+        event.KillerName.includes("Minion_T200")
+        )
+    )
+    .length;
+
+    const teamChaosInhibTurret = gameData.events.Events
+        .filter(event => 
+            event.EventName === "TurretKilled" &&
+            (
+            event.TurretKilled === "Turret_T1_R_01_A" ||
+            event.TurretKilled === "Turret_T1_L_01_A" ||
+            event.TurretKilled === "Turret_T1_C_03_A"
+            ) &&
+            (
+            teamChaosPlayers.includes(event.KillerName) ||
+            event.KillerName.includes("Minion_T200")
+            )
+        )
+    .length;
+
+    const teamChaosNexusTurret = gameData.events.Events
+        .filter(event => 
+            event.EventName === "TurretKilled" &&
+            (
+            event.TurretKilled === "Turret_T1_C_01_A" ||
+            event.TurretKilled === "Turret_T1_C_02_A"
+            ) &&
+            (
+            teamChaosPlayers.includes(event.KillerName) ||
+            event.KillerName.includes("Minion_T200")
+            )
+        )
+    .length;
+        
+        return {
+            teamChaosOuterTurret,
+            teamChaosInnerTurret,
+            teamChaosInhibTurret,
+            teamChaosNexusTurret,
+            total: teamChaosOuterTurret + teamChaosInnerTurret + teamChaosInhibTurret + teamChaosNexusTurret
+        };
 }
 
 //get dragon soul
 async function getDragonSoul() {
     const gameTimeData = await getLiveData(); 
-    const soul = gameTimeData.gameData.mapTerrain
+    const soulType = gameTimeData.gameData.mapTerrain
     
-    return soul
+    return soulType
 }
 
 // Calculate dragons taken
@@ -457,7 +574,7 @@ async function getOrderDragon() {
     }
 
     const teamOrderPlayers = allPlayers
-        .filter(player => player.team === 'ORDER') // Get players on the CHAOS team
+        .filter(player => player.team === 'ORDER') // Get players on the ORDER team
         .map(player => player.riotIdGameName); // Get their summoner names
 
     const teamOrderDragon = gameData.events.Events
@@ -465,7 +582,7 @@ async function getOrderDragon() {
             teamOrderPlayers.includes(event.KillerName) // Check if killer is on CHAOS team
         )
         .length;
-
+        
     return teamOrderDragon;
 }
 
@@ -484,7 +601,7 @@ async function getChaosDragon() {
 
     const teamChaosDragon = gameData.events.Events
         .filter(event => event.EventName === "DragonKill" &&
-            teamChaosPlayers.includes(event.KillerName || "Minion_T200") // Check if killer is on CHAOS team
+            teamChaosPlayers.includes(event.KillerName) // Check if killer is on CHAOS team
         )
         .length;
 
@@ -552,9 +669,10 @@ async function getOrderElder() {
         .map(player => player.riotIdGameName); 
 
     const teamOrderElder = gameData.events.Events 
-        .some(event => event.EventName === "ElderKill" && 
-                       (currentTime - event.EventTime <= 150) && 
-                       teamOrderPlayers.includes(event.KillerName)
+        .some(event => event.EventName === "DragonKill" && 
+                        event.DragonType === "Elder" &&
+                        (currentTime - event.EventTime <= 150) && 
+                        teamOrderPlayers.includes(event.KillerName)
         )
     return teamOrderElder ? 1 : 0;
 }
@@ -574,85 +692,153 @@ async function getChaosElder() {
         .map(player => player.riotIdGameName); 
 
     const teamChaosElder = gameData.events.Events 
-        .some(event => event.EventName === "ElderKill" && 
-                       (currentTime - event.EventTime <= 150) && 
-                       teamChaosPlayers.includes(event.KillerName)
+        .some(event => event.EventName === "DragonKill" && 
+                        event.DragonType === "Elder" &&
+                        (currentTime - event.EventTime <= 150) && 
+                        teamChaosPlayers.includes(event.KillerName)
         )
     return teamChaosElder ? 1 : 0;
 }
 
-
 // Calculate win probability based on differences
 async function calculateWinProbability() {
-    
     const activePlayerTeam = getActivePlayerTeam();
+
     const orderkills = await getOrderKills();
     const chaosKills = await getChaosKills();
-    const totalKills = orderkills + chaosKills;
+    const totalKills = orderkills + chaosKills || 1;
     const killsRatio = activePlayerTeam === 'ORDER' ? orderkills / totalKills : chaosKills / totalKills;
+
     const orderDeaths = await getOrderDeaths();
     const chaosDeaths = await getChaosDeaths();
-    const totalDeaths = orderDeaths + chaosDeaths;
+    const totalDeaths = orderDeaths + chaosDeaths || 1;
     const deathsRatio = activePlayerTeam === 'ORDER' ? orderDeaths / totalDeaths : chaosDeaths / totalDeaths;
+
     const orderAssists = await getOrderAssists();
     const chaosAssists = await getChaosAssists();
-    const totalAssists  = orderAssists + chaosAssists;
+    const totalAssists  = orderAssists + chaosAssists || 1;
     const assistsRatio = activePlayerTeam === 'ORDER' ? orderAssists / totalAssists : chaosAssists / totalAssists;
+
     const orderCS = await getOrderCS();
     const chaosCS = await getChaosCS();
-    const totalCS = orderCS + chaosCS;
+    const totalCS = orderCS + chaosCS || 1;
     const cSRatio = activePlayerTeam === 'ORDER' ? orderCS / totalCS : chaosCS / totalCS;
+
     const orderLevels = await getOrderLevels();
     const chaosLevels = await getChaosLevels();
-    const totalLevels = orderLevels + chaosLevels
+    const totalLevels = orderLevels + chaosLevels || 1;
     const levelsRatio = activePlayerTeam === 'ORDER' ? orderLevels / totalLevels : chaosLevels / totalLevels;
+
     const orderGold = await getOrderGold();
     const chaosGold = await getChaosGold();
-    const totalGold = orderGold + chaosGold;
+    const totalGold = orderGold + chaosGold || 1;
     const goldRatio = activePlayerTeam === 'ORDER' ? orderGold / totalGold : chaosGold / totalGold;
-    const orderTurret = await getOrderTurret();
-    const chaosTurret = await getChaosTurret();
-    const totalTurret = orderTurret + chaosTurret;
-    const turretRatio = activePlayerTeam === 'ORDER' ? orderTurret / totalTurret : chaosTurret / totalTurret;
+    
+    const orderOuterTurret = await (async () => {
+        const turretData = await getOrderTurret();
+         return turretData.teamOrderOuterTurret; })();
+    const orderInnerTurret = await (async () => {
+        const turretData = await getOrderTurret();
+         return turretData.teamOrderInnerTurret; })();
+    const orderInhibTurret = await (async () => {
+        const turretData = await getOrderTurret();
+         return turretData.teamOrderInhibTurret; })();
+    const orderNexusTurret = await (async () => {
+        const turretData = await getOrderTurret();
+         return turretData.teamOrderNexusTurret; })();
+    
+    const chaosOuterTurret = await (async () => {
+        const turretData = await getChaosTurret();
+        return turretData.teamChaosOuterTurret; })();
+    const chaosInnerTurret = await (async () => {
+        const turretData = await getChaosTurret();
+        return turretData.teamChaosInnerTurret; })();
+    const chaosInhibTurret = await (async () => {
+        const turretData = await getChaosTurret();
+        return turretData.teamChaosInhibTurret; })();
+    const chaosNexusTurret = await (async () => {
+        const turretData = await getChaosTurret();
+        return turretData.teamChaosNexusTurret; })();
+
+    const totalNexusTurret = await (async () => {
+        const turretData = await getChaosTurret();
+        return turretData.total; })();
+    const totalOrderTurret = await (async () => {
+        const turretData = await getOrderTurret();
+         return turretData.total; })();
+    const totalTurret = await (async () => {
+        const turretData = await getChaosTurret();
+        return turretData.total; })() + await (async () => {
+        const turretData = await getOrderTurret();
+         return turretData.total; })();
+
+    const turretTotalRatio = activePlayerTeam === 'ORDER' ? totalOrderTurret / totalTurret || 1 : totalNexusTurret / totalTurret || 1 ;
+    const turretOuterRatio = activePlayerTeam === 'ORDER' ? orderOuterTurret / (orderOuterTurret + chaosOuterTurret) || 1 : chaosOuterTurret / (chaosOuterTurret + orderOuterTurret) || 1;
+    const turretInnerRatio = activePlayerTeam === 'ORDER' ? orderInnerTurret / (orderInnerTurret + chaosInnerTurret) || 1 : chaosInnerTurret / (chaosInnerTurret + orderInnerTurret) || 1;
+    const turretInhibRatio = activePlayerTeam === 'ORDER' ? orderInhibTurret / (orderInhibTurret + chaosInhibTurret) || 1 : chaosInhibTurret / (chaosInhibTurret + orderInhibTurret) || 1;
+    const turretNexusRatio = activePlayerTeam === 'ORDER' ? orderNexusTurret / (orderNexusTurret + chaosNexusTurret) || 1 : chaosNexusTurret / (chaosNexusTurret + orderNexusTurret) || 1;
+
     const orderDragon = await getOrderDragon();
     const chaosDragon = await getChaosDragon();
-    const totalDragon = orderDragon + chaosDragon;
-    const dragonRatio = activePlayerTeam === 'ORDER' ? orderDragon / totalDragon : chaosDragon / totalDragon;
+    const totalDragon = orderDragon + chaosDragon || 1;
+
+    const dragonRatio = activePlayerTeam === 'ORDER' ? orderDragon / totalDragon || 1 : chaosDragon / totalDragon || 1;
     const dragonSoul = activePlayerTeam === 'ORDER' ? orderDragon >= 4 : chaosDragon >= 4;
+
     const orderBaron = await getOrderBaron();
     const chaosBaron = await getChaosBaron();
     const orderElder = await getOrderElder();
     const chaosElder = await getChaosElder();
     const gameTime = await getGameTimeSeconds();
     
-
     //activePlayerTeam === 'ORDER' ? teamOrderCS - teamChaosCS : teamChaosCS - teamOrderCS;
     //https://github.com/Anndrey24/LoL_Win_Probability_Prediction/blob/main/Win_Predictor.ipynb
     // Factors to weigh each stat's importance in calculating win probability
     const weights = {
         kills: 0.15,
-        deaths: 0.3,
+        deaths: 0.5,
         assists: 0.1,
         cs: 0.2,
-        gold: 0.25,
-        turret: 0.2,
-        time: 0.00001,
+        gold: 0.2,
+        turret: 0.05,
+        outerTurrent: 0.025,
+        innerTurrent: 0.05,
+        inhibTurrent: 0.1,
+        nexusTurrent: 0.15,
+        //time: 0.00001,
         dragon: 0.05,
-        dragonSoul: 0.1,
-        levels: 0.2
+        dragonSoul: 0.05,
+        levels: 0.15
     };
     
+     // Log the values
+     console.log('Active Player Team:', activePlayerTeam);
+     console.log('Order Kills:', orderkills, 'Chaos Kills:', chaosKills);
+     console.log('Total Kills:', totalKills, 'Kills Ratio:', killsRatio);
+     console.log('Order Deaths:', orderDeaths, 'Chaos Deaths:', chaosDeaths);
+     console.log('Total Deaths:', totalDeaths, 'Deaths Ratio:', deathsRatio);
+     console.log('Order Gold:', orderGold, 'Chaos Gold:', chaosGold);
+     console.log('Total Gold:', totalGold, 'Gold Ratio:', goldRatio);
+     
+     // Log the weights
+     console.log('Weights:', weights);
+
     // Calculate weighted sum for win probability
 const winScore = (
     killsRatio * weights.kills
     + assistsRatio * weights.assists
+    - deathsRatio * weights.deaths
     + cSRatio * weights.cs
     + levelsRatio * weights.levels
     + goldRatio * weights.gold 
-    + turretRatio * weights.turret 
+    + turretTotalRatio * weights.turret
+    + turretOuterRatio * weights.outerTurrent
+    + turretInnerRatio * weights.innerTurrent
+    + turretInhibRatio * weights.inhibTurrent
+    + turretNexusRatio * weights.nexusTurrent
     + dragonRatio * weights.dragon 
     + dragonSoul * weights.dragonSoul
-    + gameTime * weights.time
+   //+ gameTime * weights.time
 );
 
 /* Win probability thoughts
@@ -663,13 +849,49 @@ turrets killed / total turrets killed in game
 dragons taken / total dragons taken in game
 barons taken / total barons in game */
 
-// Normalize to a probability between 0 and 1
-const winProbability = winScore
+    // Normalize to a probability between 0 and 1 for the active player's team
+    const opposingTeamProbability = Math.min(1, winScore); // Cap it to 100%
+    // Calculate the opposing team's probability
+    const winProbability = 1 - opposingTeamProbability; // Ensure they add up to 1
 
+        /*console.log('activeplayer:', activePlayerName);
+        console.log('activeteam:', await getActivePlayerTeam());
+        console.log('killR:', killsRatio * weights.kills);
+        console.log('assistR:', assistsRatio * weights.assists);
+        console.log('deathR:', deathsRatio * weights.deaths);
+        console.log('csR:', cSRatio * weights.cs);
+        console.log('lvlR:', levelsRatio * weights.levels);
+        console.log('goldR:', goldRatio * weights.gold);
+        console.log('totalturrR:', turretTotalRatio * weights.turret);
+        console.log('outerturrR:', turretOuterRatio * weights.outerTurrent);
+        console.log('innerturrR:', turretInnerRatio * weights.innerTurrent);
+        console.log('inhibturrR:', turretInhibRatio * weights.inhibTurrent);
+        console.log('nexturrR:', turretNexusRatio * weights.nexusTurrent);
+        console.log('dragR:', dragonRatio * weights.dragon);
+        console.log('dsoulR:', dragonSoul * weights.dragonSoul);
+        console.log("win prob:", winProbability);
 
-    console.log("win prob:", winProbability)
+    console.log('opposingteam win prob:', opposingTeamProbability)*/
 
-    return (winProbability * 100).toFixed(2); // Return as a percentage
+    // Return the active team's win probability
+    return ((await getActivePlayerTeam() === 'ORDER' ? winProbability : opposingTeamProbability) * 100).toFixed(2); // Return as percentage
+}
+
+async function shouldForfeit() {
+    const winProbability = await calculateWinProbability();
+    if (winProbability <= 10) {
+        return "Go next"
+    } else if(winProbability <= 40 && winProbability > 10) {
+        return "It will be a struggle, but it's possible"
+    } else if (winProbability >= 40 && winProbability < 60) {
+        return "It's a close one"
+    } else if (winProbability >= 60 && winProbability < 80) {
+        return "You're team is looking like it should win"
+    } else if (winProbability >= 80 && winProbability < 95) {
+        return "You should win, just don't throw"
+    } else if (winProbability >= 95) {
+        return "For sure winning"
+    }
 }
 
 // Update all stats differences, including win probability, and display in the DOM
@@ -688,14 +910,21 @@ async function updateAllStatsInDOM() {
     const orderDragon = await getOrderDragon();
     const chaosDragon = await getChaosDragon();
     const dragonSoul = await getDragonSoul();
-    const orderTurret = await getOrderTurret();
-    const chaosTurret = await getChaosTurret();
+    const chaosTurret = await (async () => {
+        const turretData = await getChaosTurret();
+        return turretData.total; 
+    })();
+    const orderTurret = await (async () => {
+        const turretData = await getOrderTurret();
+         return turretData.total; 
+    })();
     const orderBaronBuff = await getOrderBaron();
     const chaosBaronBuff = await getChaosBaron();
     const orderElderBuff = await getOrderElder();
     const chaosElderBuff = await getChaosElder();
     const gameTime = await getGameTime();
     const winProbability = await calculateWinProbability();
+    const ffText = await shouldForfeit();
 
     const statsHtml = `
     <div class="stats-win-container">
@@ -713,7 +942,7 @@ async function updateAllStatsInDOM() {
     </div>
     <div class="win-container">
     <div class="stat-entry"><p class="stat-name">Win Probability:</p><p class="team-value">${winProbability}%</p></div>
-    <div class="should-ff-text">changin the text to test it more more more more more sadfksdfhsdfasf;lh</div>
+    <div class="should-ff-text">${ffText}</div>
     </div>
     </div>
     `;
