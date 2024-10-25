@@ -9,38 +9,44 @@
 <body>
 
     <h1>Game Information</h1>
-    <div id="team-stats" class="table-container">
-        <table id="order-list">
-            <thead>
-                <tr>
-                    <th class="gold-col">Total Gold</th>
-                    <th class="cs-col">CS</th>
-                    <th class="kda-col">K/D/A</th>
-                    <th class="level-col">Level</th>
-                    <th class="champion-col">Champion</th>
-                    <th class="player-col">Blue Team Player</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Player stats for Team Order will be injected here -->
-            </tbody>
-        </table>
-        <div id="compare-team-stats"></div>
-        <table id="chaos-list">
-            <thead>
-                <tr>
-                    <th class="player-col">Red Team Player</th>
-                    <th class="champion-col">Champion</th>
-                    <th class="level-col">Level</th>
-                    <th class="kda-col">K/D/A</th>
-                    <th class="cs-col">CS</th>
-                    <th class="gold-col">Item Gold</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Player stats for Team Chaos will be injected here -->
-            </tbody>
-        </table>
+    <div class="parent">
+        <div id="team-stats" class="table-container">
+            <table id="order-list">
+                <thead>
+                    <tr>
+                        <th class="player-col">Red Team Player</th>
+                        <th class="champion-col">Champion</th>
+                        <th class="level-col">Level</th>
+                        <th class="kda-col">K/D/A</th>
+                        <th class="cs-col">CS</th>
+                        <th class="gold-col">Item Gold</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Player stats for Team Order will be injected here -->
+                </tbody>
+            </table>
+        </div>
+        <div id="compare-team-stats">
+            <!--<button id="refresh-button">Refresh</button>-->
+        </div>
+        <div id="team-stats" class="table-container">
+            <table id="chaos-list">
+                <thead>
+                    <tr>
+                        <th class="player-col">Red Team Player</th>
+                        <th class="champion-col">Champion</th>
+                        <th class="level-col">Level</th>
+                        <th class="kda-col">K/D/A</th>
+                        <th class="cs-col">CS</th>
+                        <th class="gold-col">Item Gold</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Player stats for Team Chaos will be injected here -->
+                </tbody>
+            </table>
+        </div>
     </div>
     
     <script src="script.js"></script>

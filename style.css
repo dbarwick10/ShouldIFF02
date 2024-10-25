@@ -14,17 +14,18 @@ body {
     line-height: 1.6;
 }
 
+
 /* Container for the Stats Section */
-#compare-team-stats {
-    background: rgba(22, 28, 40, 0.85); /* Semi-transparent background with dark theme */
+/*#compare-team-stats {
+    background: rgba(22, 28, 40, 0.85); 
     border: 1px solid #414a6b;
     border-radius: 10px;
     padding: 20px;
     max-width: 800px;
     margin: 40px auto;
     text-align: center;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.9); /* Dark glow around the container */
-}
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.9); 
+}*/
 
 /* Headings */
 h1, h2 {
@@ -83,39 +84,39 @@ tr:hover td {
 }
 
 /* Set fixed column widths for both tables to ensure they are identical */
-#order-list th:nth-child(1), #chaos-list th:nth-child(6),
-#order-list td:nth-child(1), #chaos-list td:nth-child(6) {
-    width: 12%; /* Gold */
+#order-list th:nth-child(6), #chaos-list th:nth-child(6),
+#order-list td:nth-child(6), #chaos-list td:nth-child(6) {
+    width: 15%; /* Gold */
 }
 
-#order-list th:nth-child(2), #chaos-list th:nth-child(5),
-#order-list td:nth-child(2), #chaos-list td:nth-child(5) {
-    width: 10%; /* CS */
+#order-list th:nth-child(5), #chaos-list th:nth-child(5),
+#order-list td:nth-child(5), #chaos-list td:nth-child(5) {
+    width: 15%; /* Gold */
 }
 
-#order-list th:nth-child(3), #chaos-list th:nth-child(4),
-#order-list td:nth-child(3), #chaos-list td:nth-child(4) {
-    width: 13%; /* K/D/A */
+#order-list th:nth-child(4), #chaos-list th:nth-child(4),
+#order-list td:nth-child(4), #chaos-list td:nth-child(4) {
+    width: 15%; /* CS */
 }
 
-#order-list th:nth-child(4), #chaos-list th:nth-child(3),
-#order-list td:nth-child(4), #chaos-list td:nth-child(3) {
-    width: 10%; /* Level */
+#order-list th:nth-child(3), #chaos-list th:nth-child(3),
+#order-list td:nth-child(3), #chaos-list td:nth-child(3) {
+    width: 15%; /* K/D/A */
 }
 
-#order-list th:nth-child(5), #chaos-list th:nth-child(2),
-#order-list td:nth-child(5), #chaos-list td:nth-child(2) {
-    width: 20%; /* Champion */
+#order-list th:nth-child(2), #chaos-list th:nth-child(2),
+#order-list td:nth-child(2), #chaos-list td:nth-child(2) {
+    width: 15%; /* Champion */
 }
 
-#order-list th:nth-child(6), #chaos-list th:nth-child(1),
-#order-list td:nth-child(6), #chaos-list td:nth-child(1) {
-    width: 35%; /* Player */
+#order-list th:nth-child(1), #chaos-list th:nth-child(1),
+#order-list td:nth-child(1), #chaos-list td:nth-child(1) {
+    width: 25%; /* Player */
 }
 
 /* Ensure tables do not stretch beyond a certain width */
 table {
-    max-width: 50%; /* Adjust as needed for each table */
+    width: 50%; /* Adjust as needed for each table */
     margin: 5px; /* Remove margin from tables for better alignment */
 }
 
@@ -124,8 +125,10 @@ button {
     background: #414a6b;
     border: 2px solid #7289da;
     color: #d4af37;
-    padding: 10px 20px;
-    border-radius: 6px;
+    padding: 10px 20px 30px 20px;
+    border-radius: 5px;
+    text-align: center;
+    max-height: 25%;
     font-size: 1.1em;
     font-weight: bold;
     cursor: pointer;
@@ -140,11 +143,70 @@ button:hover {
 }
 
 /* Win Probability Glow Effect */
-#compare-team-stats p:last-child {
+/*#compare-team-stats p:last-child {
     font-size: 1.4em;
     color: #37d4af;
     text-shadow: 0 0 8px rgba(55, 212, 175, 0.8), 0 0 15px rgba(55, 212, 175, 0.5);
     font-weight: bold;
+}*/
+
+.stats-container {
+    display: flex;
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); /* Adjust width as needed */
+    gap: 10px;
+    text-align: center;
+    width: 60%;
+    border: 1px solid #414a6b;
+    border-radius: 10px;
+    padding: 20px;/* Ensures it takes the full width of the parent */
+    /*margin-right: 20px; /* Add margin to separate from table */
+    padding-left: 5%;
+    padding-right: 3%;
+}
+.stats-win-container{
+    display: flex;
+    width: 100%;
+}
+
+.win-container {
+    display: flex;
+    flex-direction: row;
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); /* Adjust width as needed */
+    text-align: center;
+    align-items: center;
+    width: 40%;
+    border: 1px solid #414a6b;
+    border-radius: 10px;
+    padding-left: 4%;
+    padding-right: 4%;
+    gap: 100px;
+}
+
+.should-ff-test {
+    width: 50%;
+}
+
+.stat-entry {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.team-value {
+    font-weight: bold;
+}
+
+.stat-name {
+    font-size: 1rem;
+    color: gray;
+    margin: 4px 0;
+}
+
+.parent {
+    display: flex;
+    flex-direction: column;
+    width: 80%;
 }
 
 /* Animations for the Container */

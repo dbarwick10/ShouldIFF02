@@ -71,14 +71,14 @@ function displayTeamStats(teamStats, teamTableId) {
 
     // Update the header with the totals
     if (teamTableId === 'order-list') {
-    teamHeader.innerHTML = `
-        <th>Item Gold</th>
-        <th>CS</th>
-        <th>K/D/A</th>
-        <th>Level</th>
-        <th>Champion</th>
-        <th>${activePlayerTeam === 'ORDER' ? 'Red Team' : 'Blue Team'} Player</th>
-    `;
+        teamHeader.innerHTML = `
+            <th> ${activePlayerTeam === 'CHAOS' ? 'Blue Team' : 'Red Team'} Player</th>
+            <th>Champion</th>
+            <th>Level</th>
+            <th>K/D/A</th>
+            <th>CS</th>
+            <th>Item Gold</th>
+        `;
     } else if (teamTableId === 'chaos-list') {
         teamHeader.innerHTML = `
             <th> ${activePlayerTeam === 'CHAOS' ? 'Blue Team' : 'Red Team'} Player</th>
@@ -88,19 +88,19 @@ function displayTeamStats(teamStats, teamTableId) {
             <th>CS</th>
             <th>Item Gold</th>
         `;
-        }
+    }
 
     teamStats.forEach(player => {
         const row = document.createElement('tr');
         
         if (teamTableId === 'order-list') {
             row.innerHTML = `
-                <td>${player.totalGold}</td>
-                <td>${player.cs}</td>
-                <td>${player.kills}/${player.deaths}/${player.assists}</td>
-                <td>${player.level}</td>
-                <td>${player.champion}</td>
                 <td>${player.name}</td>
+                <td>${player.champion}</td>
+                <td>${player.level}</td>
+                <td>${player.kills}/${player.deaths}/${player.assists}</td>
+                <td>${player.cs}</td>
+                <td>${player.totalGold}</td>
             `;
         } else if (teamTableId === 'chaos-list') {
             row.innerHTML = `
@@ -385,21 +385,86 @@ async function getChaosGold() {
     return teamChaosGold;
 }
 
+// Calculate turrets taken
+async function getOrderTurret() {
+    const gameData = await getLiveData(); // Assuming this returns the full game data
+    const allPlayers = gameData.allPlayers; // Assuming players are in allPlayers array
+
+    if (!allPlayers || !gameData.events || !gameData.events.Events) {
+        console.error('Required data not found in game data');
+        return;
+    }
+
+    const teamOrderPlayers = allPlayers
+        .filter(player => player.team === 'ORDER') // Get players on the ORDER team
+        .map(player => player.riotIdGameName); // Get their summoner names
+
+    const teamOrderTurret = gameData.events.Events
+        .filter(event => 
+            event.EventName === "TurretKilled" &&
+            (
+            teamOrderPlayers.includes(event.KillerName) ||
+            event.KillerName.includes("Minion_T100")
+            )
+        )
+        .length;
+
+    return teamOrderTurret;
+}
+
+async function getChaosTurret() {
+    const gameData = await getLiveData(); // Assuming this returns the full game data
+    const allPlayers = gameData.allPlayers; // Assuming players are in allPlayers array
+
+    if (!allPlayers || !gameData.events || !gameData.events.Events) {
+        console.error('Required game data not found');
+        return 0;
+    }
+
+    const teamChaosPlayers = allPlayers
+        .filter(player => player.team === 'CHAOS') // Get players on the CHAOS team
+        .map(player => player.riotIdGameName); // Get their summoner names
+
+    const teamChaosTurret = gameData.events.Events
+        .filter(event => 
+            event.EventName === "TurretKilled" &&
+            (
+            teamChaosPlayers.includes(event.KillerName) || 
+            event.KillerName.includes("Minion_T200")
+            )
+        )
+        .length;
+
+    return teamChaosTurret;
+}
+
+//get dragon soul
+async function getDragonSoul() {
+    const gameTimeData = await getLiveData(); 
+    const soul = gameTimeData.gameData.mapTerrain
+    
+    return soul
+}
+
 // Calculate dragons taken
 async function getOrderDragon() {
     const gameData = await getLiveData(); // Assuming this returns the full game data
     const allPlayers = gameData.allPlayers; // Assuming players are in allPlayers array
 
-    if (!allPlayers) {
-        console.error('No players found in game data');
-        return;
+    if (!allPlayers || !gameData.events || !gameData.events.Events) {
+        console.error('Required game data not found');
+        return 0;
     }
 
-    const teamOrderDragon = gameData.events.Events 
-        .filter(event => event.EventName === "DragonKill")
-        .filter(event => {
-            return allPlayers.some(player => player.team === 'ORDER');
-        }).length;
+    const teamOrderPlayers = allPlayers
+        .filter(player => player.team === 'ORDER') // Get players on the CHAOS team
+        .map(player => player.riotIdGameName); // Get their summoner names
+
+    const teamOrderDragon = gameData.events.Events
+        .filter(event => event.EventName === "DragonKill" &&
+            teamOrderPlayers.includes(event.KillerName) // Check if killer is on CHAOS team
+        )
+        .length;
 
     return teamOrderDragon;
 }
@@ -408,16 +473,20 @@ async function getChaosDragon() {
     const gameData = await getLiveData(); // Assuming this returns the full game data
     const allPlayers = gameData.allPlayers; // Assuming players are in allPlayers array
 
-    if (!allPlayers) {
-        console.error('No players found in game data');
-        return;
+    if (!allPlayers || !gameData.events || !gameData.events.Events) {
+        console.error('Required game data not found');
+        return 0;
     }
 
-    const teamChaosDragon = gameData.events.Events 
-        .filter(event => event.EventName === "DragonKill")
-        .filter(event => {
-            return allPlayers.some(player => player.team === 'CHAOS');
-        }).length;
+    const teamChaosPlayers = allPlayers
+        .filter(player => player.team === 'CHAOS') // Get players on the CHAOS team
+        .map(player => player.riotIdGameName); // Get their summoner names
+
+    const teamChaosDragon = gameData.events.Events
+        .filter(event => event.EventName === "DragonKill" &&
+            teamChaosPlayers.includes(event.KillerName || "Minion_T200") // Check if killer is on CHAOS team
+        )
+        .length;
 
     return teamChaosDragon;
 }
@@ -433,11 +502,15 @@ async function getOrderBaron() {
         return;
     }
 
+    const teamOrderPlayers = allPlayers
+        .filter(player => player.team === 'ORDER')
+        .map(player => player.riotIdGameName); 
+
     const teamOrderBaron = gameData.events.Events 
         .some(event => event.EventName === "BaronKill" && 
                        (currentTime - event.EventTime <= 150) && 
-                       allPlayers.some(player => player.team === 'ORDER'));
-
+                       teamOrderPlayers.includes(event.KillerName)
+             )
     return teamOrderBaron ? 1 : 0;
 }
 
@@ -451,11 +524,15 @@ async function getChaosBaron() {
         return;
     }
 
+    const teamChaosPlayers = allPlayers
+        .filter(player => player.team === 'CHAOS')
+        .map(player => player.riotIdGameName); 
+
     const teamChaosBaron = gameData.events.Events 
         .some(event => event.EventName === "BaronKill" && 
                        (currentTime - event.EventTime <= 150) && 
-                       allPlayers.some(player => player.team === 'CHAOS'));
-
+                       teamChaosPlayers.includes(event.KillerName)
+             )
     return teamChaosBaron ? 1 : 0;
 }
 
@@ -470,11 +547,15 @@ async function getOrderElder() {
         return;
     }
 
+    const teamOrderPlayers = allPlayers
+        .filter(player => player.team === 'ORDER')
+        .map(player => player.riotIdGameName); 
+
     const teamOrderElder = gameData.events.Events 
         .some(event => event.EventName === "ElderKill" && 
                        (currentTime - event.EventTime <= 150) && 
-                       allPlayers.some(player => player.team === 'ORDER'));
-
+                       teamOrderPlayers.includes(event.KillerName)
+        )
     return teamOrderElder ? 1 : 0;
 }
 
@@ -488,11 +569,15 @@ async function getChaosElder() {
         return false; 
     }
     
+    const teamChaosPlayers = allPlayers
+        .filter(player => player.team === 'CHAOS')
+        .map(player => player.riotIdGameName); 
+
     const teamChaosElder = gameData.events.Events 
         .some(event => event.EventName === "ElderKill" && 
                        (currentTime - event.EventTime <= 150) && 
-                       allPlayers.some(player => player.team === 'CHAOS'));
-
+                       teamChaosPlayers.includes(event.KillerName)
+        )
     return teamChaosElder ? 1 : 0;
 }
 
@@ -525,6 +610,10 @@ async function calculateWinProbability() {
     const chaosGold = await getChaosGold();
     const totalGold = orderGold + chaosGold;
     const goldRatio = activePlayerTeam === 'ORDER' ? orderGold / totalGold : chaosGold / totalGold;
+    const orderTurret = await getOrderTurret();
+    const chaosTurret = await getChaosTurret();
+    const totalTurret = orderTurret + chaosTurret;
+    const turretRatio = activePlayerTeam === 'ORDER' ? orderTurret / totalTurret : chaosTurret / totalTurret;
     const orderDragon = await getOrderDragon();
     const chaosDragon = await getChaosDragon();
     const totalDragon = orderDragon + chaosDragon;
@@ -541,27 +630,29 @@ async function calculateWinProbability() {
     //https://github.com/Anndrey24/LoL_Win_Probability_Prediction/blob/main/Win_Predictor.ipynb
     // Factors to weigh each stat's importance in calculating win probability
     const weights = {
-        kills: 0.25,
+        kills: 0.15,
         deaths: 0.3,
-        assists: .21,
-        cs: 0.4,
-        gold: 0.4,
-        time: .00001,
-        dragon: .05,
-        dragonSoul: .5,
-        levels: .2
+        assists: 0.1,
+        cs: 0.2,
+        gold: 0.25,
+        turret: 0.2,
+        time: 0.00001,
+        dragon: 0.05,
+        dragonSoul: 0.1,
+        levels: 0.2
     };
     
     // Calculate weighted sum for win probability
 const winScore = (
-    killsRatio * weights.kills +
-    assistsRatio * weights.assists +
-    cSRatio * weights.cs +
-    levelsRatio * weights.levels +
-    goldRatio * weights.gold 
-    //+dragonRatio * weights.dragon 
-    //+dragonSoul * weights.dragonSoul
-    //+ gameTime * weights.time
+    killsRatio * weights.kills
+    + assistsRatio * weights.assists
+    + cSRatio * weights.cs
+    + levelsRatio * weights.levels
+    + goldRatio * weights.gold 
+    + turretRatio * weights.turret 
+    + dragonRatio * weights.dragon 
+    + dragonSoul * weights.dragonSoul
+    + gameTime * weights.time
 );
 
 /* Win probability thoughts
@@ -596,20 +687,39 @@ async function updateAllStatsInDOM() {
     const chaosGold = await getChaosGold();
     const orderDragon = await getOrderDragon();
     const chaosDragon = await getChaosDragon();
+    const dragonSoul = await getDragonSoul();
+    const orderTurret = await getOrderTurret();
+    const chaosTurret = await getChaosTurret();
+    const orderBaronBuff = await getOrderBaron();
+    const chaosBaronBuff = await getChaosBaron();
+    const orderElderBuff = await getOrderElder();
+    const chaosElderBuff = await getChaosElder();
     const gameTime = await getGameTime();
     const winProbability = await calculateWinProbability();
 
     const statsHtml = `
-        <h2>${activePlayerTeam === 'ORDER' ? 'Blue team' : 'Red team'}</h2>
-        <p>Game Time: ${gameTime}</p>
-        <p>${orderkills} :K: ${chaosKills}</p>
-        <p>${orderdeaths} :D: ${chaosdeaths}</p>
-        <p>${orderAssists} :A: ${chaosAssists}</p>
-        <p>${orderCS} :CS: ${chaosCS}</p>
-        <p>${orderGold} :Item Gold: ${chaosGold}</p>
-        <p>Win Probability: ${winProbability}%</p>
+    <div class="stats-win-container">
+    <div class="stats-container">
+        <div class="stat-entry"><p class="team-value">${orderkills}</p><p class="stat-name">Kills</p><p class="team-value">${chaosKills}</p></div>
+        <div class="stat-entry"><p class="team-value">${orderdeaths}</p><p class="stat-name">Deaths</p><p class="team-value">${chaosdeaths}</p></div>
+        <div class="stat-entry"><p class="team-value">${orderAssists}</p><p class="stat-name">Assists</p><p class="team-value">${chaosAssists}</p></div>
+        <div class="stat-entry"><p class="team-value">${orderCS}</p><p class="stat-name">CS</p><p class="team-value">${chaosCS}</p></div>
+        <div class="stat-entry"><p class="team-value">${orderGold}</p><p class="stat-name">Gold</p><p class="team-value">${chaosGold}</p></div>
+        <div class="stat-entry"><p class="team-value">${orderTurret}</p><p class="stat-name">Turrets</p><p class="team-value">${chaosTurret}</p></div>
+        <div class="stat-entry"><p class="team-value">${orderDragon}</p><p class="stat-name">Dragons</p><p class="team-value">${chaosDragon}</p></div>
+        <div class="stat-entry"><p class="team-value">${orderDragon > 3 ? dragonSoul : false}</p><p class="stat-name">Dragon Soul</p><p class="team-value">${chaosDragon > 3 ? dragonSoul : false}</p></div>
+        <div class="stat-entry"><p class="team-value">${orderBaronBuff === 1 ? 'Yes' : 'No'}</p><p class="stat-name">Baron Buff</p><p class="team-value">${chaosBaronBuff === 1 ? 'Yes' : 'No'}</p></div>
+        <div class="stat-entry"><p class="team-value">${orderElderBuff === 1 ? 'Yes' : 'No'}</p><p class="stat-name">Elder Buff</p><p class="team-value">${chaosElderBuff === 1 ? 'Yes' : 'No'}</p></div>
+    </div>
+    <div class="win-container">
+    <div class="stat-entry"><p class="stat-name">Win Probability:</p><p class="team-value">${winProbability}%</p></div>
+    <div class="should-ff-text">changin the text to test it more more more more more sadfksdfhsdfasf;lh</div>
+    </div>
+    </div>
     `;
-    updateTeamStatsInDOM(statsHtml);
+updateTeamStatsInDOM(statsHtml);
+
+
 }
 
 // Function to display data in the DOM
@@ -627,3 +737,20 @@ document.addEventListener('DOMContentLoaded', () => {
     gameInformation();
     updateAllStatsInDOM();
 });
+
+/* document.addEventListener('DOMContentLoaded', function() {
+    // Get the refresh button element
+    const refreshButton = document.getElementById('refresh-button');
+
+    // Check if the button exists
+    if (refreshButton) {
+        // Add a click event listener to the button
+        refreshButton.addEventListener('click', function() {
+            console.log("refreshed");
+            // Uncomment the next line to refresh the page
+            // location.reload();
+        });
+    } else {
+        console.error("Refresh button not found!");
+    }
+}); */
