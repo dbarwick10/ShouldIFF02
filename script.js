@@ -3,8 +3,23 @@
 let cachedGameData = null;
 
 // Actually get the data
-async function getLiveData() {
 
+// async function getLiveData() {
+//     const url = "https://127.0.0.1:2999/liveclientdata/allgamedata";
+//     try {
+//       const response = await fetch(url);
+//       if (!response.ok) {
+//         //throw new Error(Response status: ${response.status});
+//       }
+  
+//       const json = await response.json();
+//       console.log(json);
+//     } catch (error) {
+//       console.error(error.message);
+//     }
+//   }
+
+async function getLiveData() {
     // If cached data exists, return it
     if (cachedGameData) {
         return cachedGameData;
@@ -12,16 +27,17 @@ async function getLiveData() {
 
     try {
         // Fetch the data from allgamedata.json for testing
-        const response = await fetch('allgamedata.json');
+        //const response = await fetch('allgamedata.json');
         
-        /*const response = await fetch("https://cors-anywhere.herokuapp.com/https://127.0.0.1:2999/liveclientdata/allgamedata", {
-            method: "GET",
-            mode: "cors",
-            headers: {
-              "Content-Type": "application/json",
-            },
-        });*/
-
+        const response = await axios.get("https://127.0.0.1:2999/liveclientdata/allgamedata")//, {
+        //     method: "GET",
+        //     mode: "cors",
+        //     headers: {
+        //       "Content-Type": "application/json",
+        //       "access-control-allow-origin": "https://127.0.0.1:2999"
+        //     },
+        // });
+        console.log('asldkjhasdlkf',response)
         if (response.ok) {
             cachedGameData = await response.json(); // Store data in memory
             return cachedGameData;
@@ -34,6 +50,17 @@ async function getLiveData() {
         return null;
     }
 }
+
+// async function getLiveData() {
+//     const response = await fetch('https://127.0.0.1:2999/liveclientdata/allgamedata');
+//     if (!response.ok) {
+//         throw new Error(`Response status ${response.status}`, { cause: response });
+//    }
+//    const data = await response.json();
+//    console.log('asdfdsaf', data)
+//    return { data, response };
+// }
+
 
 async function getActivePlayerTeam() {
     try {
@@ -854,7 +881,7 @@ barons taken / total barons in game */
     // Calculate the opposing team's probability
     const winProbability = 1 - opposingTeamProbability; // Ensure they add up to 1
 
-        /*console.log('activeplayer:', activePlayerName);
+        //console.log('activeplayer:', activePlayerName);
         console.log('activeteam:', await getActivePlayerTeam());
         console.log('killR:', killsRatio * weights.kills);
         console.log('assistR:', assistsRatio * weights.assists);
@@ -871,7 +898,7 @@ barons taken / total barons in game */
         console.log('dsoulR:', dragonSoul * weights.dragonSoul);
         console.log("win prob:", winProbability);
 
-    console.log('opposingteam win prob:', opposingTeamProbability)*/
+    console.log('opposingteam win prob:', opposingTeamProbability)
 
     // Return the active team's win probability
     return ((await getActivePlayerTeam() === 'ORDER' ? winProbability : opposingTeamProbability) * 100).toFixed(2); // Return as percentage
