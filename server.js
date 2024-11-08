@@ -1,48 +1,39 @@
+// server.js
 import express from 'express';
 import cors from 'cors';
-import fetch from 'node-fetch';
-import https from 'https';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+import 'dotenv/config';
+import apiRoutes from './routes/api.js'; // Import the API routes
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 const app = express();
 const PORT = 3000;
 
-// Enable CORS for all routes
+// Middleware
 app.use(cors());
+app.use(express.json());
 
-// Create an HTTPS agent that ignores SSL verification
-const httpsAgent = new https.Agent({
-    rejectUnauthorized: false,
+// Debug middleware to log all requests
+app.use((req, res, next) => {
+    console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
+    next();
 });
 
-// Proxy endpoint to access League client data
-app.get('/liveclientdata/allgamedata', async (req, res) => {
-    try {
-        // Fetch data from the League client, using the HTTPS agent to ignore SSL verification
-        const response = await fetch('https://127.0.0.1:2999/liveclientdata/allgamedata', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            agent: httpsAgent, // Use the agent here
-        });
+// Use API routes
+app.use('/api', apiRoutes); // Use the router for all /api routes
 
-        if (!response.ok) {
-            console.error('Error fetching data from League client:', response.status, response.statusText);
-            return res.status(response.status).json({ error: 'Failed to fetch game data from League client' });
-        }
+// Serve static files - this should come after API routes
+app.use(express.static(path.join(__dirname, 'public')));
 
-        const data = await response.json();
-        console.log('Data received from League Client:', data);
-
-        // Send the data to the client
-        res.json(data);
-    } catch (error) {
-        console.error('Error in proxy server:', error);
-        res.status(500).json({ error: 'Failed to fetch game data from proxy server' });
-    }
-});
-
-// Start the server
+// Start server
 app.listen(PORT, () => {
-    console.log(`Proxy server running on http://localhost:${PORT}`);
+    console.log(`Server running on http://localhost:${PORT}`);
+    console.log('Available endpoints:');
+    console.log('  - GET /api/test');
+    console.log('  - GET /api/puuid');
+    console.log('  - GET /api/match-stats');
+    console.log('  - GET /api/liveclientdata/allgamedata');
 });
