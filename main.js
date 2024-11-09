@@ -23,9 +23,6 @@ function createWindow() {
     app.whenReady().then(() => {
         createWindow();
     
-        // Start server.js as a child process and log output to the console
-        //const server = spawn('cmd.exe', ['/c', 'start', 'cmd.exe', '/k', `node ${path.join(app.getAppPath(), 'server.js')}`]);
-
         const server = spawn('node', [path.join(app.getAppPath(), 'server.js')], {
             stdio: 'pipe', // Pipe stdout and stderr
         });

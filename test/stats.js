@@ -222,6 +222,7 @@ function calculateEnemyTeamStats(matchStats, puuid) {
     return enemyTeamStats;
 }
 
+
 function generateRow(category, section, playerStats, teamStats, enemyTeamStats) {
     const stats = section.data[category];
     let count;
@@ -245,7 +246,7 @@ function generateRow(category, section, playerStats, teamStats, enemyTeamStats) 
 
     return `
         <tr>
-            <td>${category}</td>
+            <td>${capitalize(category)}</td>
             <td>${section.name}</td>
             <td>${avgKDA.toFixed(2)}</td>
             <td>${avgLevel.toFixed(2)}</td>
